@@ -632,7 +632,8 @@ def _action_for_idx(state, idx):
     # pot after I call. raise_to = currentStreetBet + fraction × pot_after_call.
     pot_at_action = state["totalPot"] + sum(p["currentBet"] for p in state["players"])
     pot_after_call = pot_at_action + to_call
-    raise_to = state["currentStreetBet"] + int(round(fraction * pot_after_call))
+    # round-half-up to match JS's Math.round; Python's round() is half-to-even
+    raise_to = state["currentStreetBet"] + int(fraction * pot_after_call + 0.5)
     clamped = max(lo, min(hi, raise_to))
     return {"type": "raise", "amount": clamped}
 

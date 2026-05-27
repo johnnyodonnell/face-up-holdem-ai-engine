@@ -7,6 +7,6 @@ dist/
 training/.venv/
 training/checkpoints/
 training/replays/
-training/*parity_expected.json
+training/*_expected.json
 __pycache__/
 *.pyc
