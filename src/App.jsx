@@ -13,7 +13,7 @@ import {
   isHumansTurn,
   startNewHand,
 } from './engine/game.js'
-import { bestMove } from './engine/random.js'
+import { bestMove } from './engine/heuristic.js'
 
 export default function App() {
   const [state, setState] = useState(createGame)
@@ -21,7 +21,13 @@ export default function App() {
   // Bots act instantly whenever it's their turn.
   useEffect(() => {
     if (!isBotsTurn(state)) return
-    setState((s) => (isBotsTurn(s) ? applyAction(s, bestMove(s)) : s))
+    setState((s) => {
+      if (!isBotsTurn(s)) return s
+      // Per-seat seed so each bot's MC sampling is independent; mixed with
+      // handNumber so the same bot makes different decisions across hands.
+      const seed = (s.actionOnSeat + 1) * 1_000_003 + s.handNumber * 31
+      return applyAction(s, bestMove(s, seed))
+    })
   }, [state])
 
   // Auto-deal the very first hand on mount.
